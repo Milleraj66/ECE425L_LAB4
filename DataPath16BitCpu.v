@@ -30,18 +30,20 @@
 //                Ins[11:8] = Rs
 //                Ins[7:4] = Rt
 //                Ins[3:0] = Rd
-//          TODO: Control signal for Caddr_Mux 
-//          TODO: Control signal LOAD/Clear for RegFile
-//          TODO: Testbench Sign Extend
-//          TODO: Caddr_Mux needs to be 4bit
-//          TODO: Control Signal for B_MUX
-//          TODO: ALU Input bits???
-//          TODO: Control signal Memroy write
+//          xTODO: Testbench Sign Extend
+//          xTODO: Caddr_Mux needs to be 4bit
+//          xTODO: ALU Input bits???
+//          NOTE: ALU Cin = 0
 //          TODO: Fix Unsigned Adder
 //          TODO: OPCODE for ALU? 
-//          NOTE: PC or PC_PONE??
-//          TODO: Implement JUmp
 //          TODO: PC_MUX Control anded with zero flag
+//          TODO: Implement JUmp
+//          NOTE: PC or PC_PONE??
+
+//          TODO: Control signal for Caddr_Mux 
+//          TODO: Control signal LOAD/Clear for RegFile
+//          TODO: Control Signal for B_MUX
+//          TODO: Control signal Memroy write
 //          TODO: Control Module
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -75,8 +77,8 @@ module DataPath16BitCpu(Clk);
     //  input: I0 = Rt, I1 = Rd
     //  procdure: Selected from control depending on Instruction Type
     //  output: Caddr(4bit)
-    //                                   Enable,Select,Input1,Input0,Output
-    Mux16bit_2to1           Caddr_MUX   (1'b1     ,   S  , Ins[3:0]   , Ins[7:4]   , Caddr);
+    //                                     Enable,Select,Input1[4b],Input0[4b],Output[4]
+    Mux4bit_2to1            Caddr_MUX   (1'b1     ,   S  , Ins[3:0]   , Ins[7:4]   , Caddr);
     
     //*** 4. 16x16 Register File Module
     //  input: Addr = Rs, Baddr = Rt, Caddr = Rd/Rt, WriteData = C [Found Later]
@@ -105,7 +107,7 @@ module DataPath16BitCpu(Clk);
     //  input: Input1 = X(16bit), Input2 = Y(16bit), Opcode(first 3 bits)
     //  output: ALUout =Out(16bit), ZeroFlag(1bit)
     //         input1(16b),input2(16b),Output(16b),CarryIn,CarryOut,LessThan,EqualTo,GreaterThan,Overflow,Opcode 
-    ALU                     ALU1    (A          ,Y          ,ALU_Out        ,Cin    ,Cout    ,Lt      ,Eq     ,Gt         ,Ov      ,Opcode);
+    ALU                     ALU1    (A          ,Y          ,ALU_Out        ,0'b0    ,Cout    ,Lt      ,Eq     ,Gt         ,Ov      ,Opcode);
     
     //*** 9. Data Memory Module
     //  input: DataMemoryAddress = ALUout = Out(16bit), DataMemoryValue = B(16bit)
