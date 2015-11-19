@@ -14,6 +14,7 @@ module D_FF(Clk  , reset, D    , Q);
     input D, Clk, reset;
     output reg Q;
     
+            
     always @(posedge Clk or negedge reset)
         if (~reset)
             begin

@@ -23,13 +23,25 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 // (Data I/O Address[16b], Write to memory if 1[1b], Data to write[16b], Data to read[16b])                  
-module Memory_16bAddr(Addr,Write,Data_In,Data_Out);
+module Memory_16bAddr(Addr,Read,Write,Data_In,Data_Out);
     input [15:0] Addr;
+    input Read;
     input Write;
     input [15:0] Data_In;
     output [15:0] Data_Out;
     reg [15:0] Data_Out;
-    reg [15:0] my_memory [0:32767]; // Memory Width: 16bits, Memory Depth: 0 to 2^15-1
+    reg [15:0] my_memory [0:63]; // Memory Width: 16bits, Memory Depth: 0 to 2^15-1?
+    
+    parameter [15:0] D0 = 0; 
+    parameter [15:0] D1 = 0;
+    parameter [15:0] D2 = 0;
+    
+    initial
+        begin
+            my_memory[0] = D0;
+            my_memory[1] = D1;
+            my_memory[2] = D2; 
+        end
     
     // Read/Write Memory depending on Write value
     // Write: 1 -> Write into memory && Read memory at Addr
@@ -42,7 +54,7 @@ module Memory_16bAddr(Addr,Write,Data_In,Data_Out);
             my_memory [Addr] = Data_In;
             end
         // Read Data
-        else if(!Write)
+        if(Read)
             begin
             // Read Value From Memory
             Data_Out = my_memory [Addr];

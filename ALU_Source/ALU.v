@@ -22,11 +22,11 @@
 //          TODO: Implement Mult/Div
 //////////////////////////////////////////////////////////////////////////////////
 
-//         input1(16b),input2(16b),Output(16b),CarryIn,CarryOut,LessThan,EqualTo,GreaterThan,Overflow,Opcode 
-module ALU(X          ,Y          ,Out        ,Cin    ,Cout    ,Lt      ,Eq     ,Gt         ,Ov      ,Opcode);
+//         input1(16b),input2(16b),Output(16b),CarryOut,LessThan,EqualTo,GreaterThan,Overflow,Opcode 
+module ALU(X          ,Y          ,Out            ,Cout    ,Lt      ,Eq     ,Gt         ,Ov      ,Opcode);
     // inputs
     input [15:0] X,Y;
-    input Cin;
+    //input Cin;
     input [2:0] Opcode;
     // ouputs
     output Cout,Lt,Eq,Gt,Ov;
@@ -41,10 +41,10 @@ module ALU(X          ,Y          ,Out        ,Cin    ,Cout    ,Lt      ,Eq     
     //***** 1. Use input data X and Y to perform ALU operation
     // OPERATION 000: unsigned addition
     //                                       input1(16b),input2(16b),CarryIn,CarryOut,Overflow      ,Output(16b)
-    FullAdder_16bit         FA              (X          ,Y          ,Cin    ,C1      , Ov_adders[0] ,Z0);
+    FullAdder2s_16bit         Add_2s         (X          ,Y          ,1'b0    ,C1      , Ov_adders[0] ,Z0);
     // OPERATION 001: 2's complement add/sub    
     //                                       input1(16b),input2(16b),CarryIn,CarryOut , Overflow    ,Output(16b)
-    FullAdder2s_16bit       FA_2s           (X          ,Y          ,Cin    ,Cout     , Ov_adders[1],Z1);             
+    FullAdder2s_16bit       Sub_2s           (X          ,Y          ,1'b1    ,Cout     , Ov_adders[1],Z1);             
     // OPERATION 010: Bitwise AND
     //                                       input1(16b),input2(16b),output(16b) 
     AND_Bitwise             AND_B1          (X          ,Y          ,Z2);
