@@ -22,11 +22,6 @@ module Decoder_3to8(E     ,X        ,Z);
     output [7:0] Z;
     
     // Structural gate logic
-    // Possibly take these out and just us ~X[2], ~X[1], etc  
-    //not n1(X2not,X[2]);  
-    //not n2(X1not,X[1]);  
-    //not n3(X0not,X[0]);  
-
     //  outputs
     and A0(Z[0],E,~X[2],~X[1],~X[0]);
     and A1(Z[1],E,~X[2],~X[1], X[0]);

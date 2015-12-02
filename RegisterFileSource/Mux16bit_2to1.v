@@ -14,10 +14,12 @@
 //                  X1 is second 16bit input
 //          Z : 16-bit selected output
 
+// FIXED, MUX LOGIC WAS BACKWARD
+
 //////////////////////////////////////////////////////////////////////////////////
 
-//                   Enable,Select,Input1,Input2,Output
-module Mux16bit_2to1(E     ,   S  , X0   , X1   , Z);
+//                   Enable,Select,Input1,Input0,Output
+module Mux16bit_2to1(E     ,   S  , X1   , X0   , Z);
     input E, S;
     input [15:0] X1;
     input [15:0] X0;
@@ -30,8 +32,8 @@ module Mux16bit_2to1(E     ,   S  , X0   , X1   , Z);
     // Structural model for 2-to-1 MUX
     // Intermediate gates
     not            n1(Snot,S);
-    and a1[15:0]  (A1,E,S,X0);
-    and a2[15:0]  (A2,E,Snot,X1);
+    and a2[15:0]  (A2,E,Snot,X0);
+    and a1[15:0]  (A1,E,S,X1);
     // Output
     or  o1[15:0]  (Z, A1, A2);
     
