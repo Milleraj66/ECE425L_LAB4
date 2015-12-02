@@ -23,18 +23,18 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 //         input1(16b),input2(16b),Output(16b),CarryOut,LessThan,EqualTo,GreaterThan,Overflow,Opcode 
-module ALU(X          ,Y          ,Out            ,Cout    ,Lt      ,Eq     ,Gt         ,Ov      ,Opcode);
+module ALU(X          ,Y          ,Out            ,Cout    ,Lt      ,nEq     ,Gt         ,Ov      ,Opcode);
     // inputs
     input [15:0] X,Y;
     //input Cin;
     input [2:0] Opcode;
     // ouputs
-    output Cout,Lt,Eq,Gt,Ov;
+    output Cout,Lt,nEq,Gt,Ov;
     output [15:0] Out;
     // intermediate connections
     wire [15:0] Z0,Z1,Z2,Z3,Z4,Z5,Zeq,ZLt; // output for operation module
     wire C1; // Carry Out bit for FA
-    wire nSignBit,nEq, CoutLt,OvLt, TmpGt, TmpLt;
+    wire nSignBit, CoutLt,OvLt, TmpGt, TmpLt;
     wire [1:0] Ov_adders; // Overflow output bits for two adders
 
     //****************************************************************************************
@@ -58,7 +58,7 @@ module ALU(X          ,Y          ,Out            ,Cout    ,Lt      ,Eq     ,Gt 
     // OPERATION 101: Branch If Not Equal To
     // 16 bit flag. 16'b0 == FALSE, non zero == TRUE
     //                                       input1(16b),input2(16b),Flag(16b) 
-    BNE                     BNE1            (X          ,Y          ,Z5);
+    BNE                     BNE1            (X          ,Y          ,Z5, nEq);
     // OPERATION 110: Unimplemented -> Multiply by 2?
     // OPERATION 111: Unimplemented -> Divide by 2?
      
@@ -68,33 +68,37 @@ module ALU(X          ,Y          ,Out            ,Cout    ,Lt      ,Eq     ,Gt 
     // The enable input is set to 1 (there is no disable option for the ALU
     //                                       Enable,Select,Input1,Input2,Input3,Input4,Input5,Input6,Input7,input8, Output
     Mux16bit_8to1            MUX1           (1'b1,Opcode,Z0,Z1,Z2,Z3,Z4,Z5,16'b0,16'b0,Out);
-    
     //*****************************************************************************************
-    //***** 3. Set Cout,Ov,lt,eq,gt flags
-    // a. Set Carry out flag
-    //      Currently just using the carry out of 2's comp - Should add a mux
-    //      To select between two adders
-    // b. Set Overflow select proper overflow depending on which addition operation
-    //                      Enable,Select   ,Input1       ,Input0       ,Output
-    Mux1bit_2to1    MUX_Ov(1'b1   ,Opcode[0], Ov_adders[1], Ov_adders[0], Ov);
-    // c. Set Equal to flag: 
-    // if X XOR Y == 0 then X == Y, else not X != Y
-    xor XOR1 [15:0] (Zeq,X,Y);
-    // If any bit is 1, than number is not zero -> X != Y
-    or(nEq,Zeq[0],Zeq[1],Zeq[2],Zeq[3],Zeq[4],Zeq[5],Zeq[6],Zeq[7],Zeq[8],Zeq[9],Zeq[10],Zeq[11],Zeq[12],Zeq[13],Zeq[14],Zeq[15]);
-    // Correct logic
-    not(Eq,nEq);
-    // d. Set Less than flag: Check sign bit of 2's comp, 1==LT,0==nLT
-    // X-Y = POS/NEG/ZERO. 
-    // must always minus (CarryIn == 1 -> minus)
-    //                                       input1(16b),input2(16b),CarryIn,CarryOut, Overflow  ,Output(16b)
-    FullAdder2s_16bit       FA_Lt           (X          ,Y          ,1'b1    ,CoutLt     , OvLt        ,ZLt);    
-    or(TmpLt,1'b0,ZLt[15]);
-    // Account for if Eq is true for Lt and Gt
-    and(Lt,TmpLt,nEq);
-    // e. Set Greater than flag: Check sign bit of 2's comp, 1==nGT,0==GT    
-    not(nSignBit,ZLt[15]);
-    or(TmpGt,1'b0,nSignBit);
-    // Account for if Eq is true for Lt and Gt
-    and(Gt,TmpGt,nEq);
+
 endmodule
+
+
+//    //***** 3. Set Cout,Ov,lt,eq,gt flags
+//// a. Set Carry out flag
+////      Currently just using the carry out of 2's comp - Should add a mux
+////      To select between two adders
+//// b. Set Overflow select proper overflow depending on which addition operation
+////                      Enable,Select   ,Input1       ,Input0       ,Output
+//Mux1bit_2to1    MUX_Ov(1'b1   ,Opcode[0], Ov_adders[1], Ov_adders[0], Ov);
+//// c. Set Equal to flag: 
+//// if X XOR Y == 0 then X == Y, else not X != Y
+//xor XOR1 [15:0] (Zeq,X,Y);
+//// If any bit is 1, than number is not zero -> X != Y
+//or(nEq,Zeq[0],Zeq[1],Zeq[2],Zeq[3],Zeq[4],Zeq[5],Zeq[6],Zeq[7],Zeq[8],Zeq[9],Zeq[10],Zeq[11],Zeq[12],Zeq[13],Zeq[14],Zeq[15]);
+//// Correct logic
+//not(Eq,nEq);
+//// d. Set Less than flag: Check sign bit of 2's comp, 1==LT,0==nLT
+//// X-Y = POS/NEG/ZERO. 
+//// must always minus (CarryIn == 1 -> minus)
+////                                       input1(16b),input2(16b),CarryIn,CarryOut, Overflow  ,Output(16b)
+//FullAdder2s_16bit       FA_Lt           (X          ,Y          ,1'b1    ,CoutLt     , OvLt        ,ZLt);    
+//or(TmpLt,1'b0,ZLt[15]);
+//// Account for if Eq is true for Lt and Gt
+//and(Lt,TmpLt,nEq);
+//// e. Set Greater than flag: Check sign bit of 2's comp, 1==nGT,0==GT    
+//not(nSignBit,ZLt[15]);
+//or(TmpGt,1'b0,nSignBit);
+//// Account for if Eq is true for Lt and Gt
+//and(Gt,TmpGt,nEq);
+
+

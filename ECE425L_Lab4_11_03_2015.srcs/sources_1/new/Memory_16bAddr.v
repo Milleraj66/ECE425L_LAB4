@@ -35,12 +35,15 @@ module Memory_16bAddr(Addr,Read,Write,Data_In,Data_Out);
     parameter [15:0] D0 = 0; 
     parameter [15:0] D1 = 0;
     parameter [15:0] D2 = 0;
-    
+    //parameter [15:0] D3 = 0;
+
+
     initial
         begin
             my_memory[0] = D0;
             my_memory[1] = D1;
             my_memory[2] = D2; 
+            //my_memory[3] = D3;
         end
     
     // Read/Write Memory depending on Write value

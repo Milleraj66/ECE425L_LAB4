@@ -17,7 +17,8 @@ module Reg_File16b(A,B,C,Aaddr,Baddr,Caddr,Load,Clear,Clk);
     input Load,Clear,Clk;
     wire [255:0] In, Out; // 16,16bit MUX in/out
     wire [15:0] Zdec;    //output of decoder 
- 
+    
+    
     //***** 1. Instantiate 16, 16 bit registers
     //                                    Clock,AsyncReset,RegInput,RegOutput               
     //Register16b         REG[15:0]      (Clk ,reset      ,In           ,Out);
@@ -41,10 +42,10 @@ module Reg_File16b(A,B,C,Aaddr,Baddr,Caddr,Load,Clear,Clk);
     //***** 2. Select the two output registers (A,B) using Aaddr & Baddr
     // Wire each 16 bit reg into input of 1st 16bit mux. Using Aaddr as select. Output is 16bit out A
     //                               (Enable,Select(3b),Input0[16b_all],Input1,Input2,Input3,Input4,Input5,Input6,Input7,Input8,Input9,Input10,Input11,Input12,Input13,Input14,input15, Output)
-    Mux16bit_16to1       MUX1        (1'b1,Aaddr,Out[15:0],Out[31:16],Out[47:32],Out[63:48],Out[79:64],Out[95:80],Out[111:96],Out[127:112],Out[143:128],Out[159:144],Out[175:160],Out[191:176],Out[207:192],Out[223:208],Out[239:224],Out[255:240],A);
+    Mux16bit_16to1       MUX1        (1,Aaddr,Out[15:0],Out[31:16],Out[47:32],Out[63:48],Out[79:64],Out[95:80],Out[111:96],Out[127:112],Out[143:128],Out[159:144],Out[175:160],Out[191:176],Out[207:192],Out[223:208],Out[239:224],Out[255:240],A);
     // Wire each 16 bit reg into input of 2nd 16bit mux. Using Baddr as select. Output is 16bit out B
     //                               (Enable,Select(3b),Input0[16b_all],Input1,Input2,Input3,Input4,Input5,Input6,Input7,Input8,Input9,Input10,Input11,Input12,Input13,Input14,input15, Output)
-    Mux16bit_16to1       MUX2        (1'b1,Baddr,Out[15:0],Out[31:16],Out[47:32],Out[63:48],Out[79:64],Out[95:80],Out[111:96],Out[127:112],Out[143:128],Out[159:144],Out[175:160],Out[191:176],Out[207:192],Out[223:208],Out[239:224],Out[255:240],B);
+    Mux16bit_16to1       MUX2        (1,Baddr,Out[15:0],Out[31:16],Out[47:32],Out[63:48],Out[79:64],Out[95:80],Out[111:96],Out[127:112],Out[143:128],Out[159:144],Out[175:160],Out[191:176],Out[207:192],Out[223:208],Out[239:224],Out[255:240],B);
     
     //***** 3. Decode and load register's input using Caddr and Load
     // Instatiate 4-to-16 Decoder using Caddr as input. Wire output to enable pin of each 16bit2to1mux

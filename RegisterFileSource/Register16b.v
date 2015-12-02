@@ -15,6 +15,6 @@ module Register16b(Clk  ,     reset,      In,Out);
     
     //***** 16 bit Parallel in, Parallel out register
     //                  Clock, Reset, Input, Output                                
-    D_FF     DFF [15:0] (Clk  , reset, In    , Out);
+    D_FF    DFF [15:0] (Clk  , reset, In    , Out);
     
 endmodule

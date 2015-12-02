@@ -40,11 +40,11 @@ module ControlUnit4bit(OPCODE, Control);
         // SLT
         7 : assign Control = 11'b010_0100_0101;
         // LW
-        8 : assign Control = 11'b011_0001_1101;
+        8 : assign Control = 11'b011_0000_1100;
         // SW       
-        10 : assign Control = 11'b001_1001_1101;
+        10 : assign Control = 11'b001_1000_1100;
         // BNE
-        14 : assign Control = 11'b001_0001_1111;
+        14 : assign Control = 11'b000_0101_1110;
         // JMP
         15 : assign Control = 11'b101_0001_1111;
             //default : $display  ("Need to complete");
