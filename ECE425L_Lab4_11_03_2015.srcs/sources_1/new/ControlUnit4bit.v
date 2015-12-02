@@ -30,23 +30,23 @@ module ControlUnit4bit(OPCODE, Control);
     case(OPCODE)
         //         Control = {Jump,RegWrite,AluSrc,MemWrite,ALUop[3b],MemtoReg,MemRead,Branch,RegDst}[11b]
         // AND
-        0 : assign Control = 11'b010_0010_0101;
+        0 :  Control = 11'b010_0010_0101;
         // OR
-        1 : assign Control = 11'b010_0011_0101;
+        1 :  Control = 11'b010_0011_0101;
         // ADD 2's comp.
-        2 : assign Control = 11'b010_0000_0101;
+        2 :  Control = 11'b010_0000_0101;
         // SUB 2's comp.
-        6 : assign Control = 11'b010_0001_0101;
+        6 :  Control = 11'b010_0001_0101;
         // SLT
-        7 : assign Control = 11'b010_0100_0101;
+        7 :  Control = 11'b010_0100_0101;
         // LW
-        8 : assign Control = 11'b011_0000_1100;
+        8 :  Control = 11'b011_0000_1100;
         // SW       
-        10 : assign Control = 11'b001_1000_1100;
+        10 :  Control = 11'b001_1000_1100;
         // BNE
-        14 : assign Control = 11'b000_0101_1110;
+        14 :  Control = 11'b000_0101_1110;
         // JMP
-        15 : assign Control = 11'b101_0001_1111;
+        15 :  Control = 11'b101_0001_1111;
             //default : $display  ("Need to complete");
       endcase
 endmodule

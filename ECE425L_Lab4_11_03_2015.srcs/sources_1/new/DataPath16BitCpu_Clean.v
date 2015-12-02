@@ -1,11 +1,8 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// AUTHOR: ARTHUR J. MILLER & Bibek B.
-// Module Name: DataPath16BitCpu
-// Create Date: 11/03/2015 05:31:37 PM
-// Edit Date: 11/10/2015 ARTHUR J. MILLER & Bibek B.
-// Edit Date: 11/17/2015 ARTHUR J. MILLER & Bibek B.
-// Edit Date: 11/24/2015 Arthur J. Miller & Bibek B. 
+// AUTHOR: ARTHUR J. MILLER
+// Module Name: DataPath16BitCpu_Clean
+// Create Date: 11/30/2015 11:40:11 PM
 // ECE425L LAB #4 Problem 1
 // Purpose: 
 //            Design and implement a structural model for the processor data path. 
@@ -25,35 +22,23 @@
 //            your particular design. It is unlikely that your register file will require
 //            modification, but the control signals to the ALU may be reconfigured to more
 //            effectively interpret instructions.
-
-//          NOTE: Control Unit Bits:
-//                Control = {Jump,RegWrite,AluSrc,MemWrite,ALUop[3b],MemtoReg,MemRead,Branch,RegDst}[11b]
-//          NOTE: Instruction Break Down R-Type
-//                Ins[15:12] = OP
-//                Ins[11:8] = Rs
-//                Ins[7:4] = Rt
-//                Ins[3:0] = Rd
-//          TODO: Sign Extend structural
-//          TODO: Double check control signals
-//          xTODO: Fix Data Memory: Single data memory so initialization is easier
-//          TODO: Clean ALU 
-
 //////////////////////////////////////////////////////////////////////////////////
 
 // Driver module for CPU
-module DataPath16BitCpu(Clk,Reset,Restart,A,B,ALU_Out,PC,Ins,Control,PC_Next,MemToReg_Out,ALUsrc_Out,Caddr,Mem_Out,PC_PlusONE_Out,PC_Branch_Out,PC_PlusOnePlusOFFSET_Out,nEq);
-    input Clk;
-    input Reset;
-    input Restart;
-    output [15:0] A,B,ALU_Out,PC, Ins,PC_Next,MemToReg_Out,ALUsrc_Out;
-    output [10:0] Control;
-    output [3:0] Caddr;
-    //output Reset;
-    output [15:0] Mem_Out;
-    output [15:0] PC_PlusONE_Out;
-    output [15:0] PC_Branch_Out,PC_PlusOnePlusOFFSET_Out;
-    output nEq;
+module DataPath16BitCpu_Clean(Clk,Reset,Restart,PC,Ins,Control,A,B,ALU_Out,Caddr);
+    input Clk;  
+    input Reset;                        // Reset File Registers
+    input Restart;                      // Reset Program Counter to zero
     
+    output [3:0] PC;                   // Program Counter
+    output [15:0] Ins;                  // Instruction
+    output [10:0] Control;              // Control signals
+    output [15:0] A;                    // Rs contents
+    output [15:0] B;                    // Rt/Rd contents
+    output [15:0] ALU_Out;              // ALU_Out = A op B
+    output [3:0] Caddr;                 // Write Address into Register File
+    
+    //**** Intermidiate Wires
     wire [15:0] PC;                     // Program Counter
     wire [15:0] Ins;                    // Instruction from Instruction Memory
     wire [3:0] Caddr;                   // Register Write Address (Rt or Rd)
@@ -78,19 +63,14 @@ module DataPath16BitCpu(Clk,Reset,Restart,A,B,ALU_Out,PC,Ins,Control,PC_Next,Mem
     //  ouput: Instruction Address goes to Memory & Instruction Address Incrementer -> Jump
     // (Clock,AsyncReset[ActiveLowLogic],RegInput,RegOutput)              
     Register16b             ProgramCounter          (Clk,Restart,PC_Next,PC);
-    //ProgramCounter2     PC     (Clk,1'b1,temp,PC)
-    //ProgramCounter      ProgramCounter          (Clk,PC);
-    //ProgramCounter2     ProgramCounter2  (PC_Next,Clk,PC);
+
 
     //*** 2. 16x(2^16) Memory Module?
     //  input: 16bit instruction address from PC
     //  procedure: Decode inst. addr. and ouput reg value
     //  output: 16bit instrcution register value [The Instructions]
     //          [OP:Rs:Rt:Rd] each 4bit
-    // (Data I/O Address[16b], read,Write to memory if 1[1b], Data to write[16b], Data to read[16b]) 
-    //              Initialize instruction memory 
-    //  LW,LW,ADD                
-    //Memory_16bAddr  #(16'b1000_0000_0000_0000,16'b1000_0000_0001_0000,16'b0010_0000_0001_0010)   INST_MEMORY    (PC,1'b1,1'b0,16'b0000_0000_0000_0000,Ins);
+    // (Data I/O Address[16b], read,Write to memory if 1[1b], Data to write[16b], Data to read[16b])              
     Instr_Mem   Instruction_mem (PC,1'b1,1'b0,16'b0000_0000_0000_0000,Ins);
     
     //*** 3. 2-to-1(4bit) MUX
@@ -135,8 +115,6 @@ module DataPath16BitCpu(Clk,Reset,Restart,A,B,ALU_Out,PC,Ins,Control,PC_Next,Mem
     //  input: DataMemoryAddress = ALUout = Out(16bit), DataMemoryValue = B(16bit)
     //  output: ReadData
     // (Data I/O Address[16b], Write to memory if 1[1b], Data to write[16b], Data to read[16b])
-    // INIT: M(0) = 1, M(1) = 2, M(2) = 3                  
-    //Memory_16bAddr    #(16'b0000_0000_0000_1000,16'b0000_0000_0000_0010,16'b0000_0000_0000_0011)      DATA_MEMORY      (ALU_Out,Control[2],Control[7],B,Mem_Out);
     Data_mem        DATA_MEMORY      (ALU_Out,Control[2],Control[7],B,Mem_Out);
     
     
@@ -165,7 +143,6 @@ module DataPath16BitCpu(Clk,Reset,Restart,A,B,ALU_Out,PC,Ins,Control,PC_Next,Mem
     // Mux output of PC_MUX and Jump address. Select control 1: jump & 0:PC_MUX output 
     //                                          Enable,Select,Input1,Input0,Output
     Mux16bit_2to1           Jump_MUX   (1'b1     ,   Control[10]  , Ins   ,  PC_Branch_Out  , PC_Next);
-   
-    //and AND1[15:0] (PC_Next, PC_tmp, 16'b1111_1111_1111_1111);
-   
+     
 endmodule
+
