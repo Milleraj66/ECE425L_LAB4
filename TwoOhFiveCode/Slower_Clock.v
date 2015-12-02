@@ -1,22 +1,10 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 01/29/2015 07:51:53 PM
-// Design Name: 
+// AUTHOR: ARTHUR J. MILLER
 // Module Name: Slower_Clock
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
+// Create Date: 01/29/2015 07:51:53 PM
+// ECE425L LAB #4 Problem 1
+// Purpose: Slower the Nexy's 4 clock down to 2Sec period 
 //////////////////////////////////////////////////////////////////////////////////
 
 
@@ -29,7 +17,7 @@ module Slower_Clock(
     always @ (posedge clk_100Mhz) 
     begin 
         counter = counter +1; // Increment counter 
-        if (counter == 50_000_000) // check if it reaches 50,000,000 
+        if (counter == 100_000_000) // check if it reaches 50,000,000 
         begin 
             clk_1Hz=~clk_1Hz; // if so, then flip the logic state of the 
             counter =0; // output and reset the counte 

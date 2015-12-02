@@ -3,39 +3,29 @@
 // AUTHOR: ARTHUR J. MILLER
 // Module Name: Driver_16BitCpu
 // Create Date: 11/30/2015 11:33:01 PM
+// Edit Date: Arthur Miller & Bibek B. 12/01/2015
+// EDIT: Arthur Miller: 12/1/2015
 // ECE425L LAB #4 Problem 1
 // Purpose: Driver module for 16 bit Cpu datapath
 ////////////////////////////////////////////////////////////////////////////////////
-module Driver_16BitCpu(Clk_100Hz,Reset,Restart,Clk_1Hz,PC,Ins);
-    input Clk_100Hz;
+module Driver_16BitCpu(Clk_100MHz,Reset,Restart,PC_4bit,Ins_4bit,ALU_Out_4bit,Mem_Out_4bit);
+    // **** Inputs
+    input Clk_100MHz;                   // Nexy's 4 100Mhz Clock
     input Reset;                        // Register File Reset Switch
     input Restart;                      // Program Reset button
-    output Clk_1Hz;
-    output [3:0] PC;                   // Program Counter
-    output [15:12] Ins;                  // Instruction
-    //,Control,A,B,ALU_Out,Caddr
-    //output [10:0] Control;              // Control signals
-    //output [15:0] A;                    // Rs contents
-    //output [15:0] B;                    // Rt/Rd contents
-    //output [15:0] ALU_Out;              // ALU_Out = A op B
-    //output [3:0] Caddr;                 // Write Address into Register File
-    wire [15:0] Ins;
-    wire [10:0] Control;              // Control signals
-    wire [15:0] A;                    // Rs contents
-    wire [15:0] B;                    // Rt/Rd contents
-    wire [15:0] ALU_Out;              // ALU_Out = A op B
-    wire [3:0] Caddr;                 // Write Address into Register File
+    // **** Outputs
+    output wire [3:0] PC_4bit;          // First four bits of PC                  
+    output wire [3:0] Ins_4bit;         // Last four bits of Instruction (the opcode)               
+    output wire [3:0] ALU_Out_4bit;     // First four bits of ALU_Out   
+    output wire [3:0] Mem_Out_4bit;     // First four bits of Memory Output
+    // **** Intermediate Wires
+    wire Clk_2Hz;                       // Slowed down clock                      
     
     
-    //*** 1. Slow clock from 100Mhz cycle to 1hz cycle
-    Slower_Clock                        SLOW_CLOCK          (Clk_100Hz,Clk_1Hz);
+    //*** 1. Slow clock from 100Mhz cycle to 2Hz cycle
+    Slower_Clock                        SLOW_CLOCK          (Clk_100MHz,Clk_2Hz);
     
     //*** 2. Instantiate Datapath
-    //                                                       (In[1b],In[1b],In[1],Out[16b],Out[16b],Out[11b],Out[16b],Out[16b],Out[16b],Output[4b])
-    DataPath16BitCpu_Clean              DATA_PATH           (Clk_1Hz,Reset,Restart,PC,Ins,Control,A,B,ALU_Out,Caddr);
-    
-    
-    
-    
-    
+    // (Clock[1b],RegisterReset,InstructionRestart,PC[3:0],Ins[15:12],ControlSig[11b],A[16b],B[3:0],ALU_Out[3:0],RegFileInAddr[4b],DataMemOut[3:0])
+    DataPath16BitCpu_Clean              UUT                 (Clk_2Hz,Reset,Restart,PC_4bit,Ins_4bit,,,,ALU_Out_4bit,,Mem_Out_4bit);    
 endmodule

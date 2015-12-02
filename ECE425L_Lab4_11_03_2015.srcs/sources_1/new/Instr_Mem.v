@@ -1,24 +1,13 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 11/24/2015 02:00:49 PM
-// Design Name: 
+// AUTHOR: ARTHUR J. MILLER
 // Module Name: Instr_Mem
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
+// Create Date: 11/24/2015 02:00:49 PM
+// Edit Date  : 12/01/2015 AJM
+// ECE425L LAB #4
+// Purpose: Initialize instruction memory for program
+//          Only need to read instruction memory not write to it
 //////////////////////////////////////////////////////////////////////////////////
-
 // (Data I/O Address[16b], Write to memory if 1[1b], Data to write[16b], Data to read[16b])                  
 module Instr_Mem(Addr,Read,Write,Data_In,Data_Out);
     input [15:0] Addr;
@@ -41,29 +30,17 @@ module Instr_Mem(Addr,Read,Write,Data_In,Data_Out);
             // Loop 5 times
             my_memory[7] = 16'b0010_0001_0011_0011;     // ADD  $R1,$R3,$R3             # +2 until 10
             my_memory[8] = 16'b1110_0011_0010_1110;     // BNE  $R3,$R2,my_memory[7]    # $R1 = $R3 -> Dont Branch
-            my_memory[9] = 16'hA616;                     // SW   $R2,6($R6)            # $R3 initially 0:  Mem[6+0] <= 10
+            my_memory[9] = 16'hA616;                     // SW   $R1,6($R6)            # $R3 initially 0:  Mem[6+0] <= 2
             my_memory[10] = 16'hA737;                    // SW   $R3,7($R7)            # $R3 initially 0:  Mem[7+0] <= 10
             
             //my_memory[9] = 16'b1111_1111_1111_1100;     // JMP  1111_1111_1100 
             
         end
     
-    // Read/Write Memory depending on Write value
-    // Write: 1 -> Write into memory && Read memory at Addr
-    // Write: 0 -> Read memory at Addr
-    always @* 
+    //*** 1. Read instruction memory at Addr
+    always @(Addr) 
     begin 
-        // Write Data
-        if(Write)
-            begin
-            my_memory [Addr] = Data_In;
-            end
-        // Read Data
-        if(Read)
-            begin
-            // Read Value From Memory
             Data_Out = my_memory [Addr];
-            end
     end
     
     
